@@ -392,3 +392,35 @@ func TestTableFuzzedPanics(t *testing.T) {
 		t,
 	)
 }
+
+func TestTableInterruptParagraphPosition(t *testing.T) {
+	markdown := goldmark.New(
+		goldmark.WithExtensions(
+			Table,
+		),
+	)
+	src := []byte("Paragraph\n| a | b |\n| - | - |\n| 1 | 2 |\n")
+	doc := markdown.Parser().Parse(text.NewReader(src))
+	p := doc.FirstChild()
+	if p == nil || p.Kind() != ast.KindParagraph {
+		t.Fatalf("expected Paragraph, got %v", p)
+	}
+	if got, want := p.Pos(), 0; got != want {
+		t.Errorf("expected paragraph Pos()=%d, got %d", want, got)
+	}
+
+	table := p.NextSibling()
+	if table == nil || table.Kind() != east.KindTable {
+		t.Fatalf("expected Table, got %v", table)
+	}
+	if got, want := table.Pos(), 10; got != want {
+		t.Errorf("expected table Pos()=%d, got %d", want, got)
+	}
+	th := table.FirstChild()
+	if th == nil || th.Kind() != east.KindTableHeader {
+		t.Fatalf("expected TableHeader, got %v", th)
+	}
+	if got, want := th.Pos(), 10; got != want {
+		t.Errorf("expected table header Pos()=%d, got %d", want, got)
+	}
+}
