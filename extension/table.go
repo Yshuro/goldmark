@@ -154,7 +154,6 @@ func NewTableParagraphTransformer() parser.ParagraphTransformer {
 }
 
 func (b *tableParagraphTransformer) Transform(node *gast.Paragraph, reader text.Reader, pc parser.Context) {
-	ppos := node.Pos()
 	lines := node.Lines()
 	if lines.Len() < 2 {
 		return
@@ -170,7 +169,7 @@ func (b *tableParagraphTransformer) Transform(node *gast.Paragraph, reader text.
 		}
 		table := ast.NewTable()
 		table.Alignments = alignments
-		table.SetPos(ppos)
+		table.SetPos(header.Pos())
 		table.AppendChild(table, ast.NewTableHeader(header))
 		for j := i + 1; j < lines.Len(); j++ {
 			table.AppendChild(table, b.parseRow(lines.At(j), alignments, false, reader, pc))
