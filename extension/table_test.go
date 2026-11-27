@@ -399,3 +399,36 @@ func TestTableFuzzedPanics(t *testing.T) {
 		t,
 	)
 }
+
+func TestTableIssue641(t *testing.T) {
+	markdown := testutil.NewMarkdownToStringFunc(
+		parser.New(
+			parser.WithExtensions(NewTableParser()),
+		),
+		html.New(
+			html.WithXHTML(),
+			html.WithUnsafe(),
+			html.WithExtensions(NewTableHTMLRenderer()),
+		),
+	)
+	testutil.DoTestCase(
+		markdown,
+		testutil.MarkdownTestCase{
+			No:          641,
+			Description: "Issue 641: paragraph split by table delimiter row should not be closed by subsequent setext underline",
+			Markdown:    "0\n0\n-|\n-",
+			Expected: `<p>0</p>
+<table>
+<thead>
+<tr>
+<th>0</th>
+</tr>
+</thead>
+</table>
+<ul>
+<li></li>
+</ul>`,
+		},
+		t,
+	)
+}

@@ -1161,12 +1161,15 @@ retry:
 					lastBlock.Parser.Close(last, reader, pc)
 					blocks := pc.OpenedBlocks()
 					pc.SetOpenedBlocks(blocks[0 : len(blocks)-1])
-					if p.transformParagraph(last.(*ast.Paragraph), reader, pc) {
-						// Paragraph has been transformed.
+					if p.transformParagraph(last.(*ast.Paragraph), reader, pc) || parent.LastChild() != last {
+						// Paragraph has been transformed or is no longer adjacent to the current line.
 						// So this parser is considered as failing.
 						continuable = false
 						goto retry
 					}
+				} else {
+					continuable = false
+					goto retry
 				}
 			}
 			node.(ast.BlockNode).SetBlankPreviousLines(blankLine)
