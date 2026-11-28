@@ -141,3 +141,25 @@ We're talking about the internet --- 'net for short. Let's rock 'n roll!
 //- - - - - - - - -//
 <p><img src="https://example.com/image.jpg" alt="Nice &amp; day, isn’t it?"></p>
 //= = = = = = = = = = = = = = = = = = = = = = = =//
+
+20: Quoted words starting with letters like t, e, n, l
+//- - - - - - - - -//
+Drop the 'the'; it's cleaner.
+
+There is no 'I' in 'teamwork'.
+
+Sign on the window says 'lonely'.
+
+The word 'elephant' contains exactly one 'n'.
+
+The screen displays the words 'error occurred'.
+
+'twas the night before Christmas.
+//- - - - - - - - -//
+<p>Drop the ‘the’; it’s cleaner.</p>
+<p>There is no ‘I’ in ‘teamwork’.</p>
+<p>Sign on the window says ‘lonely’.</p>
+<p>The word ‘elephant’ contains exactly one ‘n’.</p>
+<p>The screen displays the words ‘error occurred’.</p>
+<p>’twas the night before Christmas.</p>
+//= = = = = = = = = = = = = = = = = = = = = = = =//

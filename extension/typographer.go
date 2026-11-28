@@ -194,7 +194,7 @@ func (s *typographerParser) Parse(_ gast.Node, block text.Reader, pc parser.Cont
 				}
 				// special cases: 'twas, 'em, 'net
 				if len(line) > 1 && (unicode.IsPunct(before) || unicode.IsSpace(before)) &&
-					(line[1] == 't' || line[1] == 'e' || line[1] == 'n' || line[1] == 'l') {
+					isLeadingApostrophe(line) {
 					node := gast.NewText(text.NewSingleLineValueFromString(s.Substitutions[Apostrophe], block.Decoder()))
 					block.Advance(1)
 					return node
@@ -279,6 +279,60 @@ func (s *typographerParser) Parse(_ gast.Node, block text.Reader, pc parser.Cont
 
 func (s *typographerParser) CloseBlock(_ gast.Node, pc parser.Context) {
 	getUnclosedCounter(pc).Reset()
+}
+
+var leadingApostropheWords = [][]byte{
+	[]byte("twas"),
+	[]byte("tis"),
+	[]byte("til"),
+	[]byte("till"),
+	[]byte("em"),
+	[]byte("net"),
+	[]byte("cause"),
+	[]byte("round"),
+	[]byte("bout"),
+	[]byte("lil"),
+}
+
+func isLeadingApostrophe(line []byte) bool {
+	if len(line) < 2 {
+		return false
+	}
+	// Special case for 'n followed by space or end of line, e.g. "rock 'n roll"
+	if (line[1] == 'n' || line[1] == 'N') && len(line) > 2 {
+		after := util.ToRune(line, 2)
+		if util.IsSpaceRune(after) {
+			return true
+		}
+	} else if (line[1] == 'n' || line[1] == 'N') && len(line) == 2 {
+		return true
+	}
+	for _, word := range leadingApostropheWords {
+		wlen := len(word)
+		if len(line) > wlen {
+			match := true
+			for i := 0; i < wlen; i++ {
+				c := line[1+i]
+				if c >= 'A' && c <= 'Z' {
+					c += 'a' - 'A'
+				}
+				if c != word[i] {
+					match = false
+					break
+				}
+			}
+			if match {
+				if len(line) == 1+wlen {
+					return true
+				}
+				after := util.ToRune(line, 1+wlen)
+				if after != '\'' && (util.IsPunctRune(after) || util.IsSpaceRune(after)) {
+					return true
+				}
+			}
+		}
+	}
+	return false
 }
 
 type typographerParserExtension struct {
